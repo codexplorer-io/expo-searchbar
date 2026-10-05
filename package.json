@@ -6,6 +6,7 @@
     "react": "*",
     "react-native": "*",
     "@expo/vector-icons": "*",
-    "@codexporer.io/expo-app-theme": "*"
+    "@codexporer.io/expo-app-theme": "*",
+    "@codexporer.io/expo-text-input": "*"
   }
 }

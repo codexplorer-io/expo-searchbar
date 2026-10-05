@@ -1,16 +1,19 @@
 import React from 'react';
 import {
     View,
-    TextInput,
     TouchableOpacity,
     StyleSheet,
     StyleProp,
     ViewStyle,
-    TextStyle,
-    TextInputProps
+    TextStyle
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAppTheme } from '@codexporer.io/expo-app-theme';
+import {
+    TextInput,
+    TextInputProps,
+    TextInputVariant
+} from '@codexporer.io/expo-text-input';
 
 export interface SearchbarProps extends Omit<TextInputProps, 'style'> {
     value?: string;
@@ -62,11 +65,10 @@ export const Searchbar: React.FC<SearchbarProps> = ({
                 style={styles.searchIcon}
             />
             <TextInput
+                variant={TextInputVariant.Flat}
+                containerStyle={styles.inputWrapper}
                 style={[
                     styles.input,
-                    {
-                        color: theme.inputText || theme.text,
-                    },
                     inputStyle
                 ]}
                 value={value}
@@ -74,8 +76,6 @@ export const Searchbar: React.FC<SearchbarProps> = ({
                 placeholder={placeholder}
                 placeholderTextColor={resolvedPlaceholderColor}
                 clearButtonMode="never"
-                autoCapitalize="none"
-                autoCorrect={false}
                 returnKeyType="search"
                 {...restProps}
             />
@@ -109,6 +109,10 @@ const styles = StyleSheet.create({
     },
     searchIcon: {
         marginRight: 8,
+    },
+    inputWrapper: {
+        flex: 1,
+        width: 'auto',
     },
     input: {
         flex: 1,
