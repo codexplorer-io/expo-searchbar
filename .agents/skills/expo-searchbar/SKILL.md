@@ -6,17 +6,32 @@ description: Instructions and guidelines for using @codexporer.io/expo-searchbar
 # `@codexporer.io/expo-searchbar` Skill
 
 ## Overview
-`@codexporer.io/expo-searchbar` provides a specialized search text field with an integrated magnifying glass icon, automatic clear button, and adaptive theme tokens from `@codexporer.io/expo-app-theme`.
+`@codexporer.io/expo-searchbar` provides a specialized search text field with an integrated magnifying glass icon (`magnify`), conditional clear button (`close-circle`), and adaptive theme tokens from `@codexporer.io/expo-app-theme`. It wraps `@codexporer.io/expo-text-input` and forwards standard `TextInputProps`.
+
+---
+
+## Peer Dependencies
+```json
+{
+  "react": "*",
+  "react-native": "*",
+  "@expo/vector-icons": "*",
+  "@codexporer.io/expo-app-theme": "*",
+  "@codexporer.io/expo-text-input": "*"
+}
+```
 
 ---
 
 ## When to Use
-- Filter bars in list views, pickers, and galleries.
-- Search interfaces within headers or navigation toolbars.
+- Filter bars in list views, pickers (`@codexporer.io/expo-picker`), and galleries.
+- Search interfaces within headers or navigation toolbars (`@codexporer.io/expo-appbar`).
 
 ---
 
-## Usage Example
+## Usage Examples
+
+### 1. Basic Search Filter
 
 ```tsx
 import React, { useState } from 'react';
@@ -32,11 +47,26 @@ export function SearchFilter() {
         placeholder="Search projects..."
         value={query}
         onChangeText={setQuery}
-        onClear={() => setQuery('')}
+        onClear={() => console.log('Cleared')}
       />
     </View>
   );
 }
+```
+
+### 2. Forwarding Standard `TextInputProps`
+
+```tsx
+<Searchbar
+  value={searchQuery}
+  onChangeText={setSearchQuery}
+  placeholder="Search tags..."
+  autoFocus
+  autoCapitalize="none"
+  autoCorrect={false}
+  returnKeyType="search"
+  onSubmitEditing={() => performSearch(searchQuery)}
+/>
 ```
 
 ---
@@ -45,20 +75,24 @@ export function SearchFilter() {
 
 ### `<Searchbar />` Props
 
+`SearchbarProps` extends `Omit<TextInputProps, 'style'>` from `@codexporer.io/expo-text-input`.
+
 | Prop | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `value` | `string` | — | Controlled text value |
+| `value` | `string` | `''` | Controlled text value |
 | `onChangeText` | `(text: string) => void` | — | Callback fired when text changes |
 | `placeholder` | `string` | `'Search'` | Placeholder text |
-| `onClear` | `() => void` | — | Callback fired when user taps the clear button |
-| `showClearButton` | `boolean` | `true` | Shows clear icon when text is non-empty |
+| `placeholderTextColor` | `string` | `theme.placeholder` | Placeholder text font color override |
+| `iconColor` | `string` | `theme.placeholder` | Color for search (`magnify`) and clear (`close-circle`) icons |
+| `onClear` | `() => void` | — | Additional callback fired when the clear button is pressed |
 | `style` | `StyleProp<ViewStyle>` | — | Outer pill container style override |
-| `inputStyle` | `StyleProp<TextStyle>` | — | Inner TextInput style override |
-| `searchIconColor` | `string` | `theme.placeholder` | Search icon tint color override |
-| `clearIconColor` | `string` | `theme.placeholder` | Clear button icon tint override |
+| `inputStyle` | `StyleProp<TextStyle>` | — | Inner `TextInput` style override |
 
 ---
 
 ## Critical Rules & Guidelines
-1. **Always Supply `onClear`**: Users expect the clear icon to wipe the search input and notify parent state.
-2. **Automatic Theme Adaptation**: Text and background automatically match dark/light modes without extra props.
+1. **Automatic Clear Action**: Tapping the clear icon automatically calls `onChangeText?.('')` in addition to `onClear?.()`, resetting the input state.
+2. **Conditional Clear Icon**: The clear icon is displayed only when `!!value` is truthy.
+3. **TextInput Props Forwarding**: Standard input props (e.g. `autoFocus`, `autoCapitalize`, `autoCorrect`, `maxLength`, `onSubmitEditing`) pass directly through to the underlying input.
+4. **Theme Integration**: Container background (`theme.inputBackground || theme.surfaceSecondary`), border (`theme.border`), and icons (`theme.placeholder`) adapt automatically. Never hardcode color literals.
+
